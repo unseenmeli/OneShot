@@ -1,95 +1,186 @@
-import { Link } from "expo-router";
-import React from "react";
-import { Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Alert,
+  Animated,
+} from "react-native";
 
-export default function Page() {
-  return (
-    <View className="flex flex-1">
-      <Header />
-      <Content />
-      <Footer />
-    </View>
-  );
-}
+const panther = require("../images/panther.png");
 
-function Content() {
+const App1 = () => {
+  const [page, setPage] = useState("load");
+  const [apps, setApps] = useState([]);
+  const [appName, setAppName] = useState("");
+  const [appDescription, setAppDescription] = useState("");
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 3000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 3000,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    setTimeout(() => {
+      setPage("home");
+    }, 4000);
+  }, []);
+
+  const addApp = () => {
+    const newApp = { name: appName, description: appDescription };
+    setApps([...apps, newApp]);
+    setAppName("");
+    setAppDescription("");
+    setPage("home");
+  };
+
   return (
     <View className="flex-1">
-      <View className="py-12 md:py-24 lg:py-32 xl:py-48">
-        <View className="px-4 md:px-6">
-          <View className="flex flex-col items-center gap-4 text-center">
-            <Text
-              role="heading"
-              className="text-3xl text-center native:text-5xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl"
-            >
-              Welcome to Project ACME
-            </Text>
-            <Text className="mx-auto max-w-[700px] text-lg text-center text-gray-500 md:text-xl dark:text-gray-400">
-              Discover and collaborate on acme. Explore our services now.
-            </Text>
+      <Image
+        className="absolute opacity-50 -mx-96 p-8 -my-24 rotate-90"
+        source={panther}
+      />
 
-            <View className="gap-4">
-              <Link
-                suppressHighlighting
-                className="flex h-9 items-center justify-center overflow-hidden rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-gray-50 web:shadow ios:shadow transition-colors hover:bg-gray-900/90 active:bg-gray-400/90 web:focus-visible:outline-none web:focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                href="/"
-              >
-                Explore
-              </Link>
+      {page === "load" && (
+        <View className="flex-1 justify-center items-center">
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateY: translateY }],
+            }}
+          >
+            <Text className="bg-white shadow-xl py-2 px-4 font-serif font-bold text-4xl rounded-xl">
+              Welcome to OneShot
+            </Text>
+          </Animated.View>
+        </View>
+      )}
+
+      {page === "home" && (
+        <View key="home" className="flex flex-1 px-8 py-24">
+          <View className="flex flex-row">
+            <View className="flex-1 justify-center">
+              <Text className="items-center font-bold text-center text-xl font-serif">
+                OneShot
+              </Text>
             </View>
           </View>
-        </View>
-      </View>
-    </View>
-  );
-}
 
-function Header() {
-  const { top } = useSafeAreaInsets();
-  return (
-    <View style={{ paddingTop: top }}>
-      <View className="px-4 lg:px-6 h-14 flex items-center flex-row justify-between ">
-        <Link className="font-bold flex-1 items-center justify-center" href="/">
-          ACME
-        </Link>
-        <View className="flex flex-row gap-4 sm:gap-6">
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            About
-          </Link>
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            Product
-          </Link>
-          <Link
-            className="text-md font-medium hover:underline web:underline-offset-4"
-            href="/"
-          >
-            Pricing
-          </Link>
-        </View>
-      </View>
-    </View>
-  );
-}
+          <View className="flex-1 flex-row gap-5 py-5 flex-wrap">
+            {apps.length > 0
+              ? apps.map((app, index) => (
+                  <View key={index} className="items-center">
+                    <View className="bg-white shadow-lg w-20 h-20 flex justify-center items-center rounded-xl relative"></View>
+                    <Text className="py-1 font-bold font-serif">
+                      {app.name}
+                    </Text>
+                  </View>
+                ))
+              : null}
 
-function Footer() {
-  const { bottom } = useSafeAreaInsets();
-  return (
-    <View
-      className="flex shrink-0 bg-gray-100 native:hidden"
-      style={{ paddingBottom: bottom }}
-    >
-      <View className="py-6 flex-1 items-start px-4 md:px-6 ">
-        <Text className={"text-center text-gray-700"}>
-          © {new Date().getFullYear()} Me
-        </Text>
-      </View>
+            <View className="items-center">
+              <TouchableOpacity
+                onPress={() => {
+                  setPage("apps");
+                }}
+              >
+                <View className="bg-white shadow-lg w-20 h-20 flex justify-center items-center rounded-xl relative">
+                  <View className="h-1 bg-stone-950 rounded absolute w-12 z-10"></View>
+                  <View className="h-1 bg-stone-950 rounded absolute w-12 z-10 rotate-90"></View>
+                </View>
+              </TouchableOpacity>
+              <Text className="py-1 font-bold font-serif">Add App</Text>
+            </View>
+          </View>
+
+          <View className="py-2 h-20 absolute bottom-0 left-0 right-0 items-center text-center">
+            <TouchableOpacity onPress={() => setPage("home")}>
+              <Text className="font-serif text-xl">Apps</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {page === "apps" && (
+        <View key="apps" className="flex flex-1 px-8 py-24">
+          <View className="flex flex-row">
+            <View className="flex-1 justify-center">
+              <Text className="items-center font-bold text-center text-xl font-serif">
+                OneShot
+              </Text>
+            </View>
+          </View>
+
+          <View className="py-20">
+            <Text className="text-xl font-bold font-serif p-2">App Name</Text>
+            <View className="bg-white shadow-lg h-12 w-96 rounded-2xl">
+              <TextInput
+                className="p-4 font-bold"
+                placeholder="Write the name here..."
+                value={appName}
+                onChangeText={setAppName}
+              />
+            </View>
+
+            <Text className="text-xl font-bold font-serif p-2">
+              App Description
+            </Text>
+            <View className="bg-white shadow-lg h-40 w-96 rounded-2xl">
+              <TextInput
+                className="p-4 font-bold"
+                placeholder="Describe your app here..."
+                multiline
+                numberOfLines={6}
+                textAlignVertical="top"
+                value={appDescription}
+                onChangeText={setAppDescription}
+              />
+            </View>
+            <View className="flex items-center">
+              <TouchableOpacity
+                className="my-10 justify-center shadow-lg w-48 h-16 bg-white rounded-2xl"
+                onPress={addApp}
+              >
+                <Text className="font-bold font-serif text-xl text-center">
+                  Submit
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View className="py-2 h-20 absolute bottom-0 left-0 right-0 items-center text-center">
+            <TouchableOpacity onPress={() => setPage("home")}>
+              <Text className="font-serif text-xl">Back</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {page !== "home" && page !== "apps" && (
+        <View>
+          <Text>.</Text>
+        </View>
+      )}
     </View>
   );
-}
+};
+
+const App = () => {
+  return <App1 />;
+};
+
+export default App;
