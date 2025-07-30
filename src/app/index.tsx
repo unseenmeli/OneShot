@@ -10,6 +10,10 @@ import {
   Animated,
 } from "react-native";
 
+{
+  /* this is a test to learn branching and merging in git */
+}
+
 const panther = require("../images/panther.png");
 
 const App1 = () => {
