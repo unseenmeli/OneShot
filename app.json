@@ -15,6 +15,17 @@
       ]
     ],
     "name": "OneShot",
-    "slug": "OneShot"
+    "slug": "OneShot",
+    "ios": {
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select app logos"
+      },
+      "bundleIdentifier": "com.anonymous.OneShot"
+    },
+    "android": {
+      "permissions": [
+        "READ_EXTERNAL_STORAGE"
+      ]
+    }
   }
 }
